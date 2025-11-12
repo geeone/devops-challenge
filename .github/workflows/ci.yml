@@ -2,10 +2,16 @@ name: CI Pipeline
 
 on:
   push:
+    branches: [main]
     paths:
       - 'task4-cicd/**'
+      - '.github/workflows/**'
   pull_request:
     branches: [main]
+    paths:
+      - 'task4-cicd/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
 
 jobs:
   build:
