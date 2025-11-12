@@ -1,0 +1,18 @@
+image:
+  repository: wordpress
+  tag: 6.8.3-php8.1-apache
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+mysql:
+  host: mysql.default.svc.cluster.local
+  port: 3306
+  database: wordpress
+  username: wp-user
+  password: wp-pass
+
+# create a secret for DB creds or pass as env (do not use in prod)
+createSecret: false
