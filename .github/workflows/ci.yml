@@ -53,9 +53,20 @@ jobs:
         run: docker build -t devops-challenge:latest task4-cicd
 
       - name: Run container and check health
+        shell: bash
         run: |
+          set -euo pipefail
           docker run -d --rm -p 5000:5000 --name app devops-challenge:latest
-          sleep 2
-          curl -sf http://127.0.0.1:5000/ | grep '"ok": true'
-          docker logs app || true
-          docker stop app
+          # ensure cleanup even if the script fails
+          trap 'docker stop app >/dev/null 2>&1 || true' EXIT
+
+          # wait up to ~15s for the app to become ready
+          for i in {1..15}; do
+            if curl -sf http://127.0.0.1:5000/ | grep -q '"ok": true'; then
+              echo "Healthcheck OK"
+              exit 0
+            fi
+            sleep 1
+          done
+
+          echo "Healthcheck failed"; exit 1
